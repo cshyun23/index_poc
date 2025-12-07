@@ -1,0 +1,8 @@
+sqlite3
+elasticsearch
+langchain
+pydantic
+numpy
+scikit-learn
+requests
+tqdm

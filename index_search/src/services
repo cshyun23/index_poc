@@ -1,0 +1,59 @@
+# File: /index-search-python/index-search-python/src/services/ingest.py
+
+import sqlite3
+from embeddings.embedder import Embedder
+from vector_search.elastic_client import ElasticClient
+
+class IngestPipeline:
+    def __init__(self, sqlite_db_path, elasticsearch_host):
+        self.embedder = Embedder()
+        self.elastic_client = ElasticClient(elasticsearch_host)
+        self.sqlite_conn = sqlite3.connect(sqlite_db_path)
+
+    def parse_input(self, input_data):
+        # Implement parsing logic here
+        pass
+
+    def create_embeddings(self, parsed_data):
+        return self.embedder.create_embeddings(parsed_data)
+
+    def index_data(self, embeddings, parsed_data):
+        # Index data into Elasticsearch
+        self.elastic_client.index_embeddings(embeddings, parsed_data)
+
+        # Also store in SQLite
+        self.store_in_sqlite(parsed_data)
+
+    def store_in_sqlite(self, parsed_data):
+        # Implement SQLite storage logic here
+        pass
+
+    def run(self, input_data):
+        parsed_data = self.parse_input(input_data)
+        embeddings = self.create_embeddings(parsed_data)
+        self.index_data(embeddings, parsed_data)
+
+# File: /index-search-python/index-search-python/src/services/search.py
+
+from vector_search.elastic_client import ElasticClient
+from hierarchical.classifier import Classifier
+
+class SearchService:
+    def __init__(self, elasticsearch_host):
+        self.elastic_client = ElasticClient(elasticsearch_host)
+        self.classifier = Classifier()
+
+    def vector_search(self, query_embedding):
+        return self.elastic_client.search_by_vector(query_embedding)
+
+    def hierarchical_search(self, query):
+        return self.classifier.classify(query)
+
+    def unified_search(self, query):
+        query_embedding = self.classifier.embed_query(query)
+        vector_results = self.vector_search(query_embedding)
+        hierarchical_results = self.hierarchical_search(query)
+        return {
+            "vector_results": vector_results,
+            "hierarchical_results": hierarchical_results
+        }

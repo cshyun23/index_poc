@@ -1,0 +1,27 @@
+from pydantic import BaseModel
+from typing import List, Optional
+
+class IndexEntry(BaseModel):
+    id: int
+    title: str
+    description: str
+    country: str
+    type: str
+    level_1_category: str
+    level_2_category: str
+    level_3_category: str
+    level_4_category: str
+    embedding: List[float]
+
+class IndexResponse(BaseModel):
+    entries: List[IndexEntry]
+    total_count: int
+
+class SearchQuery(BaseModel):
+    query: str
+    country: Optional[str] = None
+    type: Optional[str] = None
+    level_1_category: Optional[str] = None
+    level_2_category: Optional[str] = None
+    level_3_category: Optional[str] = None
+    level_4_category: Optional[str] = None
